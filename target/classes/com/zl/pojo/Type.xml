@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.dao.ITypeDao" >
+	<!-- 根据Id级联 -->
+	<select id="findTypeById" resultType="com.zl.pojo.Type" parameterType="java.lang.Integer">
+		select * from type where daikuantypeid=#{daikuantypeid} 
+	</select>
+	<!-- 查询所有厂商 -->
+	<select id="findAllType" resultType="com.zl.pojo.Type">
+		select * from type
+	</select>
+</mapper>

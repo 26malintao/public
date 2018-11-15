@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.dao.IDaikuanDao" >
+	<!-- 分页查询 -->
+<!-- 	<select id="findSplitByFy" parameterType="java.lang.Integer" resultType="com.zl.pojo.WuZi">
+		select * from wuzi limit #{cp},5	
+	</select>
+	
+	<select id="findCount" resultType="java.lang.Integer">
+		select count(wuziid) from wuzi
+	</select>  -->
+
+	<select id="findById" resultType="com.zl.pojo.Daikuan" parameterType="java.lang.Integer">
+		select * from daikuan where sqid=#{sqid} 
+	</select>
+	<!-- 根据id修改 -->
+	<update id="updateSQ" parameterType="com.zl.pojo.Daikuan">
+		update daikuan
+		<set>
+			<if test="stateid!=null"> stateid=#{stateid}, </if>
+			<if test="price!=null"> price=#{price}, </if>
+			<if test="daikuantypeid!=null"> daikuantypeid=#{daikuantypeid}, </if>						
+		</set>
+		 where sqid=#{sqid}
+	</update>
+	<!-- 多条件分页查询 -->
+	<select id="findSQByFy" parameterType="com.zl.pojo.FenYe" resultMap="findSplit">
+		select * from daikuan 
+			<where>
+				<if test="query!=null">
+					<if test="query.qhostname!=null and query.qhostname!=''">
+						and hostname like '%${query.qhostname}%'
+					</if>
+					<if test="query.qdaikuantypeid!=null and query.qdaikuantypeid!=''">
+						and daikuantypeid =#{query.qdaikuantypeid}
+					</if>
+					<if test="query.lowprice!=null">
+						and price>=#{query.lowprice}
+					</if>
+					<if test="query.highprice!=null">
+						and price<![CDATA[<=]]>#{query.highprice}
+					</if>		
+				</if>
+			</where>
+		limit #{rowStart},5	
+	</select>
+	<!--查询记录总数  -->
+	<select id="findRowsByQuery" parameterType="com.zl.pojo.Query" resultType="java.lang.Integer">
+		select count(*) from daikuan
+			<where>
+					<if test="qhostname!=null and qhostname!=''">
+						and hostname like '%${qhostname}%'
+					</if>
+					<if test="qdaikuantypeid!=null and qdaikuantypeid!=''">
+						and daikuantypeid =#{qdaikuantypeid}
+					</if>
+					<if test="lowprice!=null">
+						and price>=#{lowprice}
+					</if>
+					<if test="highprice!=null">
+						and price<![CDATA[<=]]>#{highprice}
+					</if>		
+	
+			</where>
+	</select>
+	<resultMap type="com.zl.pojo.Daikuan" id="findSplit">
+		<id column="sqid" property="sqid"/>
+		<!-- 级联查询厂商 -->
+		<association property="state" column="stateid" javaType="com.zl.pojo.State" select="com.zl.dao.IStateDao.findStateById"></association>
+		<association property="type" column="daikuantypeid" javaType="com.zl.pojo.Type" select="com.zl.dao.ITypeDao.findTypeById"></association>
+	</resultMap>
+	<delete id="deleteAll" parameterType="int[]">
+		delete from daikuan where sqid in 
+		<foreach collection="array" index="index" item="arr" open="(" separator="," close=")" >
+			#{arr}
+		</foreach>
+	</delete> 
+	
+	<delete id="deleteDaikuan" parameterType="int[]">
+		delete from daikuan where sqid=#{sqid} 
+	</delete>
+	
+</mapper>
